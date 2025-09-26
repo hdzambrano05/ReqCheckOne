@@ -125,5 +125,19 @@ module.exports = sequelize => {
     schema: 'public'
   };
   const TasksModel = sequelize.define("tasks_model", attributes, options);
+  TasksModel.associate = function (models) {
+    // Cada tarea pertenece a un proyecto
+    TasksModel.belongsTo(models.projects_model, { foreignKey: 'project_id' });
+
+    // Cada tarea puede estar relacionada con un requisito
+    TasksModel.belongsTo(models.requirements_model, { foreignKey: 'requirement_id' });
+
+    // Cada tarea tiene un usuario asignado
+    TasksModel.belongsTo(models.users_model, { foreignKey: 'assignee_id' });
+
+    // Cada tarea puede tener muchos comentarios
+    TasksModel.hasMany(models.comments_model, { foreignKey: 'task_id' });
+  };
+
   return TasksModel;
 };

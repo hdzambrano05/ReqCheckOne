@@ -80,5 +80,16 @@ module.exports = sequelize => {
     schema: 'public'
   };
   const CommentsModel = sequelize.define("comments_model", attributes, options);
+  CommentsModel.associate = function (models) {
+    // Cada comentario pertenece a un usuario
+    CommentsModel.belongsTo(models.users_model, { foreignKey: 'user_id' });
+
+    // Cada comentario puede pertenecer a un requisito
+    CommentsModel.belongsTo(models.requirements_model, { foreignKey: 'requirement_id' });
+
+    // Cada comentario puede pertenecer a una tarea
+    CommentsModel.belongsTo(models.tasks_model, { foreignKey: 'task_id' });
+  };
+
   return CommentsModel;
 };

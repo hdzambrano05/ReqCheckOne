@@ -79,5 +79,29 @@ module.exports = sequelize => {
     schema: 'public'
   };
   const UsersModel = sequelize.define("users_model", attributes, options);
+  UsersModel.associate = function (models) {
+    UsersModel.hasMany(models.projects_model, {
+      foreignKey: 'owner_id',
+    });
+
+    UsersModel.hasMany(models.requirements_model, {
+      foreignKey: 'created_by'
+    });
+
+    // Un usuario puede ser asignado a muchas tareas
+    UsersModel.hasMany(models.tasks_model, { foreignKey: 'assignee_id' });
+
+    // Un usuario puede escribir muchos comentarios
+    UsersModel.hasMany(models.comments_model, { foreignKey: 'user_id' });
+
+    UsersModel.belongsToMany(models.projects_model, {
+      through: models.user_projects_model,
+      foreignKey: 'user_id',
+      otherKey: 'project_id',
+      as: 'collaboratedProjects'
+    });
+  };
+
+
   return UsersModel;
 };

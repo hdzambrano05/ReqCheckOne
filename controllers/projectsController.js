@@ -1,6 +1,9 @@
-const { add, update } = require('./commentsController');
-
 const projects = require('../models').projects_model;
+const users = require('../models').users_model;
+const requirements = require('../models').requirements_model;
+const tasks = require('../models').tasks_model;
+const comments = require('../models').comments_model;
+
 
 module.exports = {
 
@@ -10,6 +13,33 @@ module.exports = {
             .then((project) => res.status(200).send(project))
             .catch((error) => { res.status(400).send(error); });
     },
+
+    listFull(req, res) {
+        return projects
+            .findAll({
+                include: [
+                    {
+                        model: users,
+                    },
+                    {
+                        model: users,
+                        as: 'collaboratedProjects',
+                        through: {
+                            attributes: ['role', 'joined_at'] // 👈 columnas de user_projects
+                        }
+                    },
+                    {
+                        model: requirements,
+                    },
+                    {
+                        model: tasks,
+                    },
+                ]
+            })
+            .then(users => res.status(200).send(users))
+            .catch(error => res.status(400).send(error));
+    },
+
 
     getById(req, res) {
         return projects

@@ -81,5 +81,27 @@ module.exports = sequelize => {
     schema: 'public'
   };
   const ProjectsModel = sequelize.define("projects_model", attributes, options);
+  ProjectsModel.associate = function (models) {
+    ProjectsModel.belongsTo(models.users_model,
+      {
+        foreignKey: 'owner_id'
+      }
+    );
+
+    // Un proyecto tiene muchos requisitos
+    ProjectsModel.hasMany(models.requirements_model, { foreignKey: 'project_id' });
+
+    // Un proyecto tiene muchas tareas
+    ProjectsModel.hasMany(models.tasks_model, { foreignKey: 'project_id' });
+    
+    ProjectsModel.belongsToMany(models.users_model, {
+      through: models.user_projects_model,
+      foreignKey: 'project_id',
+      otherKey: 'user_id',
+      as: 'collaboratedProjects'
+    });
+  };
+
+
   return ProjectsModel;
 };

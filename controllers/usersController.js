@@ -1,4 +1,9 @@
 const users = require('../models').users_model;
+const projects = require('../models').projects_model;
+const requirements = require('../models').requirements_model;
+const tasks = require('../models').tasks_model;
+const comments = require('../models').comments_model;
+
 
 module.exports = {
 
@@ -8,6 +13,37 @@ module.exports = {
             .then((user_project) => res.status(200).send(user_project))
             .catch((error) => { res.status(400).send(error); });
     },
+
+    listFull(req, res) {
+        return users.findAll({
+            include: [
+                {
+                    model: projects,
+                },
+                {
+                    model: projects,
+                    as: 'collaboratedProjects',
+                    through: {
+                        attributes: ['role', 'joined_at'] // 👈 columnas de user_projects
+                    }
+                },
+                {
+                    model: requirements,
+                },
+                {
+                    model: tasks,
+                },
+                {
+                    model: comments
+
+                }
+
+            ]
+        })
+            .then(users => res.status(200).send(users))
+            .catch(error => res.status(400).send(error));
+    },
+
     getById(req, res) {
 
         console.log(req.params.id);
@@ -76,5 +112,7 @@ module.exports = {
                     .catch((error) => res.status(400).send(error));
             })
             .catch((error) => res.status(400).send(error));
-    },    
+    },
+
+
 }; 

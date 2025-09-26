@@ -7,5 +7,5 @@ router.get('/:id', commentsController.getById);
 router.post('/', commentsController.add);
 router.put('/:id', commentsController.update);
 router.delete('/:id', commentsController.delete);
-//holi
-module.exports = router;g
+
+module.exports = router;

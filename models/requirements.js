@@ -139,5 +139,24 @@ module.exports = sequelize => {
     schema: 'public'
   };
   const RequirementsModel = sequelize.define("requirements_model", attributes, options);
+  RequirementsModel.associate = function (models) {
+    // Cada requisito pertenece a un proyecto
+    RequirementsModel.belongsTo(models.projects_model, { foreignKey: 'project_id' });
+
+    // Cada requisito tiene un creador (usuario)
+    RequirementsModel.belongsTo(models.users_model, { 
+      foreignKey: 'created_by' 
+    });
+
+    // Un requisito puede tener muchas versiones
+    RequirementsModel.hasMany(models.requirement_history_model, { foreignKey: 'requirement_id' });
+
+    // Un requisito puede tener muchas tareas
+    RequirementsModel.hasMany(models.tasks_model, { foreignKey: 'requirement_id' });
+
+    // Un requisito puede tener muchos comentarios
+    RequirementsModel.hasMany(models.comments_model, { foreignKey: 'requirement_id' });
+  };
+
   return RequirementsModel;
 };

@@ -1,16 +1,11 @@
-const {
-  DataTypes
-} = require('sequelize');
-module.exports = sequelize => {
+const { DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
   const attributes = {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: null,
-      comment: null,
       primaryKey: true,
-      field: "user_id",
-      autoIncrement: false,
       references: {
         key: "id",
         model: "users_model"
@@ -19,11 +14,7 @@ module.exports = sequelize => {
     project_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: null,
-      comment: null,
       primaryKey: true,
-      field: "project_id",
-      autoIncrement: false,
       references: {
         key: "id",
         model: "projects_model"
@@ -33,30 +24,37 @@ module.exports = sequelize => {
       type: DataTypes.CHAR(20),
       allowNull: true,
       defaultValue: "member",
-      comment: null,
-      primaryKey: false,
-      field: "role",
-      autoIncrement: false
+      field: "role"
     },
     joined_at: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-      comment: null,
-      primaryKey: false,
-      field: "joined_at",
-      autoIncrement: false
+      field: "joined_at"
     }
   };
+
   const options = {
     tableName: "user_projects",
-    comment: "",
-    indexes: [],
-    timestamps: false,
+    schema: "public",
+    timestamps: false,   // 👈 evitamos created_at y updated_at
     underscored: true,
-    freezeTableName: true,
-    schema: 'public'
+    freezeTableName: true
   };
+
   const UserProjectsModel = sequelize.define("user_projects_model", attributes, options);
+
+  UserProjectsModel.associate = function (models) {
+    UserProjectsModel.belongsTo(models.users_model, {
+      foreignKey: "user_id",
+      as: "user"
+    });
+
+    UserProjectsModel.belongsTo(models.projects_model, {
+      foreignKey: "project_id",
+      as: "project"
+    });
+  };
+
   return UserProjectsModel;
 };
